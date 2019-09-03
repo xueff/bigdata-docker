@@ -1,48 +1,86 @@
-hadoop-slave1:
-   image: tonywell/docker-hbase
-   container_name: hadoop-slave1
-   volumes:
-     - ./docker-hadoop/conf:/usr/local/hadoop/etc/hadoop
-     - ./docker-hive/conf:/usr/local/hive/conf
-     - ./docker-spark/conf:/usr/local/spark/conf
-     - ./docker-hbase/conf:/usr/local/hbase/conf
-   net: zoo
-hadoop-slave2:
-   image: tonywell/docker-hbase
-   container_name: hadoop-slave2
-   volumes:
-     - ./docker-hadoop/conf:/usr/local/hadoop/etc/hadoop
-     - ./docker-hive/conf:/usr/local/hive/conf
-     - ./docker-spark/conf:/usr/local/spark/conf
-     - ./docker-hbase/conf:/usr/local/hbase/conf
-   net: zoo
-hadoop-slave3:
-   image: tonywell/docker-hbase
-   container_name: hadoop-slave3
-   volumes:
-     - ./docker-hadoop/conf:/usr/local/hadoop/etc/hadoop
-     - ./docker-hive/conf:/usr/local/hive/conf
-     - ./docker-spark/conf:/usr/local/spark/conf
-     - ./docker-hbase/conf:/usr/local/hbase/conf
-   net: zoo
-hadoop-master:
-   image: tonywell/docker-hbase
-   container_name: hadoop-master
-   volumes:
-     - ./docker-hadoop/conf:/usr/local/hadoop/etc/hadoop
-     - ./docker-hive/conf:/usr/local/hive/conf
-     - ./docker-spark/conf:/usr/local/spark/conf
-     - ./docker-hbase/conf:/usr/local/hbase/conf
-   net: zoo
-   #command: bash /usr/local/hadoop/bin/hdfs namenode -format -y && sh /usr/local/hadoop/sbin/start-all.sh -yes && sh /usr/local/spark/sbin/start-all.sh && sh /usr/local/hbase/bin/start-hbase.sh && ping localhost > /dev/null
-   ports:
-     - "50070:50070"
-     - "9083:9083"
-     - "8088:8088"
-     - "8080:8080"
-     - "8042:8042"
-     - "16010:16010"
-   links:
-     - hadoop-slave1
-     - hadoop-slave2
-     - hadoop-slave3
+zoo1:
+  image: idss/zookeeper0
+  restart: always
+  net: zoo
+  hostname: zk1
+  container_name: zk1
+  volumes:
+    - ./docker-zk/zoo1:/opt/data
+    - ./docker-zk/conf:/opt/zookeeper/conf
+  ports:
+    - "2182:2181"
+  expose:
+    - "2888"
+    - "3888"
+zoo2:
+  image: idss/zookeeper0
+  restart: always
+  net: zoo
+  hostname: zk2
+  container_name: zk2
+  volumes:
+    - ./docker-zk/zoo2:/opt/data
+    - ./docker-zk/conf:/opt/zookeeper/conf
+  ports:
+    - "2183:2181"
+  expose:
+    - "2888"
+    - "3888"
+zoo3:
+  image: idss/zookeeper0
+  restart: always
+  hostname: zk3
+  container_name: zk3
+  net: zoo
+  volumes:
+    - ./docker-zk/zoo3:/opt/data
+    - ./docker-zk/conf:/opt/zookeeper/conf
+  ports:
+    - "2184:2181"
+  expose:
+    - "2888"
+    - "3888"
+hadoop103:
+  image: idss/hbase
+  hostname: hadoop103
+  container_name: hadoop103
+  volumes:
+    - ./docker-hadoop/conf:/usr/local/hadoop/etc/hadoop
+    - ./docker-hive/conf:/usr/local/hive/conf
+    - ./docker-spark/conf:/usr/local/spark/conf
+    - ./docker-hbase/conf:/usr/local/hbase/conf
+  net: zoo
+hadoop104:
+  image: idss/hbase
+  container_name: hadoop104
+  volumes:
+    - ./docker-hadoop/conf:/usr/local/hadoop/etc/hadoop
+    - ./docker-hive/conf:/usr/local/hive/conf
+    - ./docker-spark/conf:/usr/local/spark/conf
+    - ./docker-hbase/conf:/usr/local/hbase/conf
+  net: zoo
+  hostname: hadoop104
+hadoop102:
+  image: idss/hbase
+  container_name: hadoop102
+  volumes:
+    - ./docker-hadoop/conf:/usr/local/hadoop/etc/hadoop
+    - ./docker-hive/conf:/usr/local/hive/conf
+    - ./docker-spark/conf:/usr/local/spark/conf
+    - ./docker-hbase/conf:/usr/local/hbase/conf
+  net: zoo
+  hostname: hadoop102
+  #command: bash /usr/local/hadoop/bin/hdfs namenode -format -y && sh /usr/local/hadoop/sbin/start-all.sh -yes && sh /usr/local/spark/sbin/start-all.sh && sh /usr/local/hbase/bin/start-hbase.sh && ping localhost > /dev/null
+  ports:
+    - "50071:50070"
+    - "9083:9083"
+    - "8089:8088"
+    - "8081:8080"
+    - "8042:8042"
+    - "16010:16010"
+  links:
+    - hadoop103
+    - hadoop104
+    - zoo1
+    - zoo2
+    - zoo3
